@@ -13,9 +13,16 @@ export const uploadFishAndPredict = asyncHandler(async (req, res) => {
   if (!uploadedImage) throw new ApiError(500, "Failed to upload fish image");
 
   // 🔁 Call FastAPI Microservice
-  const { data } = await axios.post("http://localhost:8000/predict", {
-    image_url: uploadedImage.url
-  });
+  const { data } = await axios.post(
+    "http://localhost:8000/predict",
+    { image_url: uploadedImage.url },
+    {
+      headers: {
+        Authorization: `Bearer ${req.cookies.accessToken}`,
+        "Content-Type": "application/json"
+      }
+    }
+  );
 
   const savedFish = await Fish.create({
     species: data.species,
